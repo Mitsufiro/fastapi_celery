@@ -1,0 +1,79 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:13-alpine
+#    command: bash -c "alembic revision --autogenerate -m "New Migration" && alembic upgrade head"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+  #    pgadmin:
+  #      image: dpage/pgadmin4
+  #      environment:
+  #        - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+  #        - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+  #      ports:
+  #        - 5050:80
+  #      depends_on:
+  #        - db
+  app:
+    build: .
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - .:/fastapi_celery
+    ports:
+      - 8000:8000
+    restart: always
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - celery_worker
+  rabbitmq:
+    image: "rabbitmq:3.9.11-management"
+    ports:
+      - "4360:4360"
+      - "5672:5672"
+      - "25672:25672"
+      - "15672:15672"
+    volumes:
+      # - "rabbitmq_data:/bitnami"
+      - /bitnami
+    depends_on:
+      - db
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: celery -A worker.celery_worker worker -l info -Q test-queue
+    volumes:
+      - .:/fastapi_celery
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      #        - app
+      - rabbitmq
+
+
+  flower:
+    container_name: flower
+    build: .
+    command: celery -A worker.celery_worker flower --port=5555 -l info -Q test-queue
+    ports:
+      - 5555:5555
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      - app
+      - rabbitmq
+      - celery_worker
+volumes:
+  postgres_data:
+#  rabbitmq_data:
+#    driver: local
