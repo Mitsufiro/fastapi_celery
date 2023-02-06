@@ -58,12 +58,13 @@ def send_message_task(text_message: str, client_tag: str, mob_code: str, mailing
         # filtred_clients = list(map(lambda x: x.mob_code == mob_code, clients))
         # print(filtred_clients)
         for client in clients:
-            db_message = ModelMessage(status='sent', mailing_id=mailing_id,
+            db_message = ModelMessage(status='', mailing_id=mailing_id,
                                       client_id=client.id,
                                       time_created=str(datetime.datetime.now().strftime('%Y %m %d %X')))
             db.add(db_message)
             db.commit()
             db.refresh(db_message)
+
             data = {'id': db_message.id,
                     'phone': client.id,
                     'text': text_message}
@@ -72,6 +73,13 @@ def send_message_task(text_message: str, client_tag: str, mob_code: str, mailing
             }
             url = f'https://probe.fbrq.cloud/v1/send/{db_message.id}'
             responce = requests.post(url=url, headers=headers, json=data)
+            if responce.status_code == 200:
+                db_message.status = 'sent'
+            else:
+                db_message.status = 'unsent'
+            db.add(db_message)
+            db.commit()
+            db.refresh(db_message)
             print(client.tag, client.mob_code)
             print(responce.content, responce.status_code)
     mailinglist = db.query(ModelMailingList).filter(ModelMailingList.id == mailing_id).first()

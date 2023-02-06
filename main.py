@@ -148,10 +148,9 @@ async def mailinglist():
     return get_items(ModelMailingList)
 
 
-@app.get('/get_stats')
+@app.get('/get_statistics')
 async def get_stats():
     mailing_lists = get_items(ModelMailingList)
-    messages = get_items(ModelMessage)
     stats = []
     for i in mailing_lists:
         messages_sent = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
@@ -164,6 +163,6 @@ async def get_stats():
             {f'id_of_mailinglist: {i.id}': {'mob_code': i.mob_code, 'tag': i.tag,
                                             'sent_messages': messages_sent.count(),
                                             'unsent_messages': messages_unsent.count(),
-             'messages_in_process': messages_in_process.count()}})
+                                            'messages_in_process': messages_in_process.count()}})
 
     return stats
