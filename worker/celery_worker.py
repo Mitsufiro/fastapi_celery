@@ -9,13 +9,13 @@ from .celery_app import celery_app
 from database import db_context
 
 
-@celery_app.task(acks_late=True)
-def test_celery(word: str) -> str:
-    for i in range(1, 11):
-        sleep(1)
-        current_task.update_state(state='PROGRESS',
-                                  meta={'process_percent': i * 10})
-    return f"test task return {word}"
+# @celery_app.task(acks_late=True)
+# def test_celery(word: str) -> str:
+#     for i in range(1, 11):
+#         sleep(1)
+#         current_task.update_state(state='PROGRESS',
+#                                   meta={'process_percent': i * 10})
+#     return f"test task return {word}"
 
 
 # def client(client: SchemaClient):
@@ -24,10 +24,10 @@ def test_celery(word: str) -> str:
 #     db.session.commit()
 #
 #     return db_client
-@celery_app.task(acks_late=True)
-def def_hello(word: str, my_word: str):
-    print('hello')
-    return word, my_word
+# @celery_app.task(acks_late=True)
+# def def_hello(word: str, my_word: str):
+#     print('hello')
+#     return word, my_word
 
 
 @celery_app.task(acks_late=True, bind=True)

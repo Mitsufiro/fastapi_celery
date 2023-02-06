@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from fast_app import app
 from fastapi import FastAPI, BackgroundTasks, Query, Depends, HTTPException
-from worker.celery_worker import defs_post_client, def_hello, send_message_task
+from worker.celery_worker import defs_post_client, send_message_task
 from worker.celery_app import celery_app
 from schemas.schemas import Client as SchemaClient
 from schemas.schemas import MailingList as SchemaMailingList
@@ -27,14 +27,14 @@ def background_on_message(task):
     print(task.get(on_message=celery_on_message, propagate=False))
 
 
-@app.get("/{word}")
-async def root(word: str, background_task: BackgroundTasks):
-    celery_app.conf.timezone = 'Europe/Moscow'
-    task = celery_app.send_task(
-        "worker.celery_worker.test_celery", args=[word], eta=datetime(2023, 1, 8, 1, 44))
-    print(task)
-    background_task.add_task(background_on_message, task)
-    return {"message": "Word received"}
+# @app.get("/{word}")
+# async def root(word: str, background_task: BackgroundTasks):
+#     celery_app.conf.timezone = 'Europe/Moscow'
+#     task = celery_app.send_task(
+#         "worker.celery_worker.test_celery", args=[word], eta=datetime(2023, 1, 8, 1, 44))
+#     print(task)
+#     background_task.add_task(background_on_message, task)
+#     return {"message": "Word received"}
 
 
 # @app.post('/clientss', response_model=SchemaClient)
@@ -146,3 +146,24 @@ async def mailinglist(mailinglist: SchemaMailingList):
 @app.get('/mailinglist/')
 async def mailinglist():
     return get_items(ModelMailingList)
+
+
+@app.get('/get_stats')
+async def get_stats():
+    mailing_lists = get_items(ModelMailingList)
+    messages = get_items(ModelMessage)
+    stats = []
+    for i in mailing_lists:
+        messages_sent = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
+            ModelMessage.status == 'sent')
+        messages_unsent = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
+            ModelMessage.status == 'unsent')
+        messages_in_process = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
+            ModelMessage.status == 'in process...')
+        stats.append(
+            {f'id_of_mailinglist: {i.id}': {'mob_code': i.mob_code, 'tag': i.tag,
+                                            'sent_messages': messages_sent.count(),
+                                            'unsent_messages': messages_unsent.count(),
+             'messages_in_process': messages_in_process.count()}})
+
+    return stats

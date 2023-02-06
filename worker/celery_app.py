@@ -13,9 +13,7 @@ celery_app = Celery(
 )
 
 celery_app.conf.task_routes = {
-    "worker.celery_worker.test_celery": "test-queue",
     'worker.celery_worker.defs_post_client': 'test-queue',
-    'worker.celery_worker.def_hello': 'test-queue',
     'worker.celery_worker.send_message_task': 'test-queue'
 }
 celery_app.conf.update(task_track_started=True)
