@@ -20,4 +20,7 @@
     <a>
         <img src="https://img.shields.io/badge/Celery-5.2.7-green?logo=Celery&logoColor=green">
     </a>
+    <a>
+        <img src="https://img.shields.io/badge/Flower-1.0.0-yellow?logo=Flower">
+    </a>
 </div>
