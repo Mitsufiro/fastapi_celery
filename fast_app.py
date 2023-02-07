@@ -127,7 +127,7 @@ class RoleChecker:
 # admin_create_resource = RoleChecker(role: str)
 
 
-@app.post("/token", response_model=Token)
+@app.post("/token", response_model=Token, tags=['User'])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user_from_db(form_data.username, form_data.password)
     if not user:
@@ -143,17 +143,17 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=Users)
+@app.get("/users/me/", response_model=Users, tags=['User'])
 async def read_users_me(current_user: Users = Depends(get_current_active_user)):
     return current_user
 
 
-@app.get("/users/me/items/")
+@app.get("/users/me/items/", tags=['User'])
 async def read_own_items(current_user: Users = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
 
-@app.post('/create_user')
+@app.post('/create_user', tags=['User'])
 async def create_user(username: str, password: str):
     password_hash = get_password_hash(password)
     db_user = ModelUser(username=username, hashed_password=password_hash)
@@ -169,7 +169,7 @@ async def create_user(username: str, password: str):
     return db_token.access_token
 
 
-@app.put('/update_user')
+@app.put('/update_user', tags=['User'])
 async def update_user(user_id: int,
                       disabled: bool | None = Query(default=False), role: str | None = Query(default=None)):
     client = db.session.query(ModelUser).get(user_id)

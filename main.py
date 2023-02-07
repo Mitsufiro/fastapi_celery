@@ -46,7 +46,7 @@ def background_on_message(task):
 #     return db_client
 
 
-@app.post('/client/')
+@app.post('/client/', tags=['Client'])
 async def post_client(tel_num: int, tag: str, mob_code: int, timezone: str, background_task: BackgroundTasks):
     # task = defs_post_client.delay(tel_num, tag, mob_code, timezone)
     db_client = ModelClient(tel_num=tel_num, tag=tag, mob_code=mob_code, timezone=timezone)
@@ -61,14 +61,14 @@ async def post_client(tel_num: int, tag: str, mob_code: int, timezone: str, back
     return 'CLIENT SAVED'
 
 
-@app.get('/client/', dependencies=[Depends(RoleChecker(['admin', 'manager']))])
+@app.get('/client/', dependencies=[Depends(RoleChecker(['admin', 'manager']))], tags=['Client'])
 async def client(current_user: Users = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return get_items(ModelClient)
 
 
-@app.put('/client/{client_id}')
+@app.put('/client/{client_id}', tags=['Client'])
 async def client(client_id: int, tel_num: int | None = Query(default=None),
                  tag: str | None = Query(default=None), mob_code: int | None = Query(default=None),
                  timezone: str | None = Query(default=None)):
@@ -94,17 +94,17 @@ async def client(client_id: int, tel_num: int | None = Query(default=None),
     return db.session.get(ModelClient, client_id)
 
 
-@app.delete('/client/')
+@app.delete('/client/', tags=['Client'])
 async def client(client_id: int):
     return delete_item(ModelClient, client_id)
 
 
-@app.get('/filtered_client/')
+@app.get('/filtered_client/', tags=['Client'])
 async def client(client_tag: str):
     return get_client_by_tag(client_tag)
 
 
-@app.post('/send_message')
+@app.post('/send_message', tags=['Message'])
 async def send_message(message: str, phone: int, data: SchemaMsg):
     data.text = message
     data.phone = phone
@@ -117,12 +117,12 @@ async def send_message(message: str, phone: int, data: SchemaMsg):
     return responce.content
 
 
-@app.get('/message/')
+@app.get('/message/', tags=['Message'])
 async def message():
     return get_items(ModelMessage)
 
 
-@app.post('/mailinglist/', response_model=SchemaMailingList)
+@app.post('/mailinglist/', response_model=SchemaMailingList, tags=['Mailinglist'])
 async def mailinglist(mailinglist: SchemaMailingList):
     db_mailinglist = ModelMailingList(time_created=mailinglist.time_created, text=mailinglist.text, tag=mailinglist.tag,
                                       mob_code=mailinglist.mob_code,
@@ -143,12 +143,12 @@ async def mailinglist(mailinglist: SchemaMailingList):
     return db_mailinglist
 
 
-@app.get('/mailinglist/')
+@app.get('/mailinglist/', tags=['Mailinglist'])
 async def mailinglist():
     return get_items(ModelMailingList)
 
 
-@app.get('/all_mailinglist_statistics')
+@app.get('/all_mailinglist_statistics', tags=['Mailinglist'])
 async def get_all_stats():
     mailing_lists = get_items(ModelMailingList)
     stats = []
@@ -165,7 +165,7 @@ async def get_all_stats():
     return stats
 
 
-@app.get('/one_mailinglist_statistic')
+@app.get('/one_mailinglist_statistic', tags=['Mailinglist'])
 async def one_mailinglist_stats(id: int):
     messages = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == id).all()
     messages_sent = filter_of_messages(id, 'sent')
@@ -180,7 +180,7 @@ async def one_mailinglist_stats(id: int):
     return messages
 
 
-@app.put('/mailinglist')
+@app.put('/mailinglist', tags=['Mailinglist'])
 async def client(mailing_id: int, text: str | None = Query(default=None),
                  tag: str | None = Query(default=None), mob_code: int | None = Query(default=None)):
     db_mailinglist = get_item(ModelMailingList, mailing_id)
