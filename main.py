@@ -14,7 +14,7 @@ from models import Message as ModelMessage
 from models import MailingList as ModelMailingList
 from fastapi_sqlalchemy import db
 from dotenv import load_dotenv
-from crud import get_items, get_client_by_tag, get_item, delete_item
+from crud import get_items, get_client_by_tag, get_item, delete_item, filter_of_messages
 import requests
 from fast_app import Users, get_current_user, RoleChecker
 
@@ -148,17 +148,14 @@ async def mailinglist():
     return get_items(ModelMailingList)
 
 
-@app.get('/get_statistics')
-async def get_stats():
+@app.get('/all_mailinglist_statistics')
+async def get_all_stats():
     mailing_lists = get_items(ModelMailingList)
     stats = []
     for i in mailing_lists:
-        messages_sent = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
-            ModelMessage.status == 'sent')
-        messages_unsent = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
-            ModelMessage.status == 'unsent')
-        messages_in_process = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == i.id).filter(
-            ModelMessage.status == 'in process...')
+        messages_sent = filter_of_messages(i.id, 'sent')
+        messages_unsent = filter_of_messages(i.id, 'unsent')
+        messages_in_process = filter_of_messages(i.id, 'in process...')
         stats.append(
             {f'id_of_mailinglist: {i.id}': {'mob_code': i.mob_code, 'tag': i.tag,
                                             'sent_messages': messages_sent.count(),
@@ -166,3 +163,18 @@ async def get_stats():
                                             'messages_in_process': messages_in_process.count()}})
 
     return stats
+
+
+@app.get('/one_mailinglist_statistic')
+async def one_mailinglist_stats(id: int):
+    messages = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == id).all()
+    messages_sent = filter_of_messages(id, 'sent')
+    messages_unsent = filter_of_messages(id, 'unsent')
+    messages_in_process = filter_of_messages(id, 'in process...')
+    mailinglist = get_item(ModelMailingList, id)
+    messages.insert(0,
+                    {f'id_of_mailinglist: {id}': {'mob_code': mailinglist.mob_code, 'tag': mailinglist.tag,
+                                                  'sent_messages': messages_sent.count(),
+                                                  'unsent_messages': messages_unsent.count(),
+                                                  'messages_in_process': messages_in_process.count()}})
+    return messages
