@@ -28,3 +28,4 @@ def filter_of_messages(id_of_mailing: int, status: str):
     filtred_message_by_status = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == id_of_mailing).filter(
         ModelMessage.status == status)
     return filtred_message_by_status
+

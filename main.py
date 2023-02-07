@@ -133,7 +133,7 @@ async def mailinglist(mailinglist: SchemaMailingList):
     db.session.commit()
     from datetime import timedelta
     three_hours = timedelta(hours=3)
-    task = send_message_task.apply_async((mailinglist.text, mailinglist.tag, mailinglist.mob_code, db_mailinglist.id),
+    task = send_message_task.apply_async((db_mailinglist.id,),
                                          eta=datetime(start_time.year, start_time.month, start_time.day,
                                                       start_time.hour,
                                                       start_time.minute) - three_hours)
@@ -178,3 +178,24 @@ async def one_mailinglist_stats(id: int):
                                                   'unsent_messages': messages_unsent.count(),
                                                   'messages_in_process': messages_in_process.count()}})
     return messages
+
+
+@app.put('/mailinglist')
+async def client(mailing_id: int, text: str | None = Query(default=None),
+                 tag: str | None = Query(default=None), mob_code: int | None = Query(default=None)):
+    db_mailinglist = get_item(ModelMailingList, mailing_id)
+    if tag != None:
+        db_mailinglist.text = text
+    else:
+        db_mailinglist.text = db_mailinglist.text
+    if tag != None:
+        db_mailinglist.tag = tag
+    else:
+        db_mailinglist.tag = db_mailinglist.tag
+    if mob_code != None:
+        db_mailinglist.mob_code = mob_code
+    else:
+        db_mailinglist.mob_code = db_mailinglist.mob_code
+    db.session.commit()
+    db.session.refresh(db_mailinglist)
+    return get_item(ModelMailingList, mailing_id)
