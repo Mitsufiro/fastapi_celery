@@ -23,4 +23,7 @@
     <a>
         <img src="https://img.shields.io/badge/Flower-1.0.0-yellow?logo=Flower">
     </a>
+    <a>
+        <img src="https://img.shields.io/badge/Docker-20.10.16-green?logo=Docker&logoColor=black?style=plastic">
+    </a>
 </div>

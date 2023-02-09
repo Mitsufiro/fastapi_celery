@@ -199,3 +199,14 @@ async def client(mailing_id: int, text: str | None = Query(default=None),
     db.session.commit()
     db.session.refresh(db_mailinglist)
     return get_item(ModelMailingList, mailing_id)
+
+
+@app.delete('/curren_task')
+def delete_task(id: int):
+    data = celery_app.control.inspect()
+    tasks = dict()
+    for i in eval(str(data.scheduled()))['celery@f089dff0e626']:
+        tasks[int(*i['request']['args'])] = i['request']['id']
+        print(i['request']['id'], *i['request']['args'])
+    celery_app.control.revoke(tasks[id], terminate=True, signal='SIGKILL')
+    return f"{tasks[id]} revoked"
