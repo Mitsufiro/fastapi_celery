@@ -122,12 +122,11 @@ async def message():
     return get_items(ModelMessage)
 
 
-@app.post('/mailinglist/', response_model=SchemaMailingList, tags=['Mailinglist'])
-async def mailinglist(mailinglist: SchemaMailingList):
-    db_mailinglist = ModelMailingList(time_created=mailinglist.time_created, text=mailinglist.text, tag=mailinglist.tag,
-                                      mob_code=mailinglist.mob_code,
-                                      time_finished=mailinglist.time_finished)
-    print(datetime.now())
+@app.post('/mailinglist', tags=['Mailinglist'])
+async def mailinglist(time_created: str, text: str, tag: str, mob_code: int):
+    db_mailinglist = ModelMailingList(time_created=time_created, text=text, tag=tag,
+                                      mob_code=mob_code,
+                                      time_finished='in process...')
     start_time = datetime.strptime(db_mailinglist.time_created, '%Y %m %d %H:%M')
     db.session.add(db_mailinglist)
     db.session.commit()
@@ -139,11 +138,10 @@ async def mailinglist(mailinglist: SchemaMailingList):
                                                       start_time.minute) - three_hours)
 
     print(task.state)
-    print(datetime.now())
     return db_mailinglist
 
 
-@app.get('/mailinglist/', tags=['Mailinglist'])
+@app.get('/mailinglist', tags=['Mailinglist'])
 async def mailinglist():
     return get_items(ModelMailingList)
 
@@ -205,8 +203,12 @@ async def client(mailing_id: int, text: str | None = Query(default=None),
 def delete_task(id: int):
     data = celery_app.control.inspect()
     tasks = dict()
-    for i in eval(str(data.scheduled()))['celery@f089dff0e626']:
+    for i in list(eval(str(data.scheduled())).values())[0]:
         tasks[int(*i['request']['args'])] = i['request']['id']
         print(i['request']['id'], *i['request']['args'])
     celery_app.control.revoke(tasks[id], terminate=True, signal='SIGKILL')
-    return f"{tasks[id]} revoked"
+    db_mailinglist = get_item(ModelMailingList, id)
+    db_mailinglist.time_finished = 'REVOKED'
+    db.session.commit()
+    db.session.refresh(db_mailinglist)
+    return f"Task with ID: {tasks[id]} REVOKED"
