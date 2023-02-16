@@ -10,7 +10,7 @@ Base = declarative_base()
 class Client(Base):
     __tablename__ = 'client'
     id = Column(Integer, primary_key=True)
-    tel_num = Column(Integer)
+    tel_num = Column(String)
     tag = Column(String)
     mob_code = Column(Integer)
     timezone = Column(String)

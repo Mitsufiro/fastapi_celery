@@ -1,5 +1,8 @@
 import os
 from datetime import datetime
+
+import phonenumbers
+
 from fast_app import app
 from fastapi import FastAPI, BackgroundTasks, Query, Depends, HTTPException
 from worker.celery_worker import defs_post_client, send_message_task
@@ -13,11 +16,10 @@ from models import Msg as ModelMsg
 from models import Message as ModelMessage
 from models import MailingList as ModelMailingList
 from fastapi_sqlalchemy import db
-from dotenv import load_dotenv
 from crud import get_items, get_client_by_tag, get_item, delete_item, filter_of_messages
 import requests
 from fast_app import Users, get_current_user, RoleChecker
-
+from phonenumbers import geocoder, carrier
 
 def celery_on_message(body):
     print(body)
@@ -47,17 +49,14 @@ def background_on_message(task):
 
 
 @app.post('/client/', tags=['Client'])
-async def post_client(tel_num: int, tag: str, mob_code: int, timezone: str, background_task: BackgroundTasks):
-    # task = defs_post_client.delay(tel_num, tag, mob_code, timezone)
-    db_client = ModelClient(tel_num=tel_num, tag=tag, mob_code=mob_code, timezone=timezone)
+async def post_client(client: SchemaClient):
+    phoneNumber = phonenumbers.parse(client.tel_num,'GB')
+    region = geocoder.description_for_number(phoneNumber, 'en')
+    region_code = phonenumbers.format_number(phoneNumber, phonenumbers.PhoneNumberFormat.INTERNATIONAL).split()[1]
+    db_client = ModelClient(tel_num=client.tel_num, tag=client.tag, mob_code=region_code, timezone=region)
     db.session.add(db_client)
     db.session.commit()
     db.session.refresh(db_client)
-    # kwargs=[client['tel_num'], client['tag'], client['mob_code'], client['timezone']])
-    # print(task)
-    # print(tel_num, tag, mob_code, timezone)
-    # background_task.add_task(background_on_message, task)
-    # print(task)
     return 'CLIENT SAVED'
 
 
@@ -69,26 +68,29 @@ async def client(current_user: Users = Depends(get_current_user)):
 
 
 @app.put('/client/{client_id}', tags=['Client'])
-async def client(client_id: int, tel_num: int | None = Query(default=None),
-                 tag: str | None = Query(default=None), mob_code: int | None = Query(default=None),
-                 timezone: str | None = Query(default=None)):
+async def client(client_id: int, client: SchemaClient):
     db_client = db.session.query(ModelClient).get(client_id)
-    if tag != None:
-        db_client.tag = tag
+    if client.tag != 'string':
+        db_client.tag = client.tag
     else:
         db_client.tag = db_client.tag
-    if tel_num != None:
-        db_client.tel_num = tel_num
+    if client.tel_num != 'string':
+        phoneNumber = phonenumbers.parse(client.tel_num,'GB')
+        region = geocoder.description_for_number(phoneNumber, 'en')
+        db_client.tel_num = client.tel_num
+        db_client.timezone = region
+        new_mob_code = phonenumbers.format_number(phoneNumber, phonenumbers.PhoneNumberFormat.INTERNATIONAL).split()[1]
+        db_client.mob_code = int(new_mob_code)
     else:
         db_client.tel_num = db_client.tel_num
-    if timezone != None:
-        db_client.timezone = timezone
-    else:
-        db_client.timezone = db_client.timezone
-    if mob_code != None:
-        db_client.mob_code = mob_code
-    else:
-        db_client.mob_code = db_client.mob_code
+    # if client.timezone != 'string':
+    #     db_client.timezone = client.timezone
+    # else:
+    #     db_client.timezone = db_client.timezone
+    # if client.mob_code != 0:
+    #     db_client.mob_code = client.mob_code
+    # else:
+    #     db_client.mob_code = db_client.mob_code
     db.session.commit()
     db.session.refresh(db_client)
     return db.session.get(ModelClient, client_id)
@@ -101,7 +103,11 @@ async def client(client_id: int):
 
 @app.get('/filtered_client/', tags=['Client'])
 async def client(client_tag: str):
-    return get_client_by_tag(client_tag)
+    client = get_client_by_tag(client_tag)
+    if client == []:
+        return f'No such clients with tag: {client_tag}'
+    else:
+        return client
 
 
 @app.post('/send_message', tags=['Message'])
@@ -123,11 +129,11 @@ async def message():
 
 
 @app.post('/mailinglist', tags=['Mailinglist'])
-async def mailinglist(time_created: str, text: str, tag: str, mob_code: int):
-    db_mailinglist = ModelMailingList(time_created=time_created, text=text, tag=tag,
-                                      mob_code=mob_code,
+async def mailinglist(mailing_list:SchemaMailingList):
+    db_mailinglist = ModelMailingList(time_created=mailing_list.time_created, text=mailing_list.text, tag=mailing_list.tag,
+                                      mob_code=mailing_list.mob_code,
                                       time_finished='in process...')
-    start_time = datetime.strptime(db_mailinglist.time_created, '%Y %m %d %H:%M')
+    start_time = mailing_list.time_created
     db.session.add(db_mailinglist)
     db.session.commit()
     from datetime import timedelta

@@ -18,10 +18,15 @@ def get_items(model):
 
 
 def delete_item(model, item_id):
-    deleted_item = get_item(model, item_id)
-    db.session.delete(get_item(model, item_id))
-    db.session.commit()
-    return deleted_item
+    if get_item(model,item_id):
+        deleted_item = get_item(model, item_id)
+        db.session.delete(get_item(model, item_id))
+        db.session.commit()
+        return deleted_item
+    else:
+        return 'Wrond id'
+
+
 
 
 def filter_of_messages(id_of_mailing: int, status: str):
