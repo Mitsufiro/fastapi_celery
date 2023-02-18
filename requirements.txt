@@ -28,6 +28,7 @@ kombu==5.2.4
 Mako==1.2.4
 MarkupSafe==2.1.1
 passlib==1.7.4
+phonenumbers==8.13.6
 prometheus-client==0.15.0
 prompt-toolkit==3.0.36
 psycopg2-binary==2.9.5

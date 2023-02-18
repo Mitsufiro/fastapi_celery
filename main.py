@@ -21,6 +21,7 @@ import requests
 from fast_app import Users, get_current_user, RoleChecker
 from phonenumbers import geocoder, carrier
 
+
 def celery_on_message(body):
     print(body)
 
@@ -50,7 +51,7 @@ def background_on_message(task):
 
 @app.post('/client/', tags=['Client'])
 async def post_client(client: SchemaClient):
-    phoneNumber = phonenumbers.parse(client.tel_num,'GB')
+    phoneNumber = phonenumbers.parse(client.tel_num, 'GB')
     region = geocoder.description_for_number(phoneNumber, 'en')
     region_code = phonenumbers.format_number(phoneNumber, phonenumbers.PhoneNumberFormat.INTERNATIONAL).split()[1]
     db_client = ModelClient(tel_num=client.tel_num, tag=client.tag, mob_code=region_code, timezone=region)
@@ -75,7 +76,7 @@ async def client(client_id: int, client: SchemaClient):
     else:
         db_client.tag = db_client.tag
     if client.tel_num != 'string':
-        phoneNumber = phonenumbers.parse(client.tel_num,'GB')
+        phoneNumber = phonenumbers.parse(client.tel_num, 'GB')
         region = geocoder.description_for_number(phoneNumber, 'en')
         db_client.tel_num = client.tel_num
         db_client.timezone = region
@@ -129,11 +130,26 @@ async def message():
 
 
 @app.post('/mailinglist', tags=['Mailinglist'])
-async def mailinglist(mailing_list:SchemaMailingList):
-    db_mailinglist = ModelMailingList(time_created=mailing_list.time_created, text=mailing_list.text, tag=mailing_list.tag,
+async def mailinglist(mailing_list: SchemaMailingList):
+    db_mailinglist = ModelMailingList(time_created=mailing_list.time_created, text=mailing_list.text,
+                                      tag=mailing_list.tag,
                                       mob_code=mailing_list.mob_code,
                                       time_finished='in process...')
     start_time = mailing_list.time_created
+    if db.session.query(ModelClient).filter(ModelClient.tag == mailing_list.tag).all() == []:
+        clients = get_items(ModelClient)
+        items = []
+        for i in clients:
+            if i.tag not in items:
+                items.append(i.tag)
+        return f'No such tag,choose one of this: {items}'
+    elif db.session.query(ModelClient).filter(ModelClient.mob_code == mailing_list.mob_code).all() == []:
+        clients = get_items(ModelClient)
+        items = []
+        for i in clients:
+            if i.mob_code not in items:
+                items.append(i.mob_code)
+        return f'No such mob_code,choose one of this: {items}'
     db.session.add(db_mailinglist)
     db.session.commit()
     from datetime import timedelta
@@ -171,6 +187,8 @@ async def get_all_stats():
 
 @app.get('/one_mailinglist_statistic', tags=['Mailinglist'])
 async def one_mailinglist_stats(id: int):
+    if not get_item(ModelMailingList,id):
+        return f'No such id of mailing as: {id}, try correct id'
     messages = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == id).all()
     messages_sent = filter_of_messages(id, 'sent')
     messages_unsent = filter_of_messages(id, 'unsent')
@@ -188,15 +206,29 @@ async def one_mailinglist_stats(id: int):
 async def client(mailing_id: int, text: str | None = Query(default=None),
                  tag: str | None = Query(default=None), mob_code: int | None = Query(default=None)):
     db_mailinglist = get_item(ModelMailingList, mailing_id)
-    if tag != None:
+    if text != None:
         db_mailinglist.text = text
     else:
         db_mailinglist.text = db_mailinglist.text
     if tag != None:
+        if db.session.query(ModelClient).filter(ModelClient.tag == tag).all() == []:
+            clients = get_items(ModelClient)
+            items = []
+            for i in clients:
+                if i.tag not in items:
+                    items.append(i.tag)
+            return f'No such tag,choose one of this: {items}'
         db_mailinglist.tag = tag
     else:
         db_mailinglist.tag = db_mailinglist.tag
     if mob_code != None:
+        if db.session.query(ModelClient).filter(ModelClient.mob_code == mob_code).all() == []:
+            clients = get_items(ModelClient)
+            items = []
+            for i in clients:
+                if i.mob_code not in items:
+                    items.append(i.mob_code)
+            return f'No such mob_code,choose one of this: {items}'
         db_mailinglist.mob_code = mob_code
     else:
         db_mailinglist.mob_code = db_mailinglist.mob_code
@@ -207,6 +239,8 @@ async def client(mailing_id: int, text: str | None = Query(default=None),
 
 @app.delete('/curren_task')
 def delete_task(id: int):
+    if not get_item(ModelMailingList, id):
+        return f'No such mailing with id: {id}'
     data = celery_app.control.inspect()
     tasks = dict()
     for i in list(eval(str(data.scheduled())).values())[0]:

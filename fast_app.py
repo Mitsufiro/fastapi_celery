@@ -9,7 +9,7 @@ from models import Token as ModelToken
 from models import User as ModelUser
 
 load_dotenv('.env')
-app = FastAPI()
+app = FastAPI(title='Mailing Service',version='0.0.1')
 app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
 
 from datetime import datetime, timedelta

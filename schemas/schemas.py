@@ -6,6 +6,7 @@ from crud import get_client_by_tag
 from pydantic import BaseModel, ValidationError, EmailStr, constr, validator
 from phonenumbers import geocoder, carrier
 from datetime import datetime
+
 MOBILE_NUMBER_TYPES = PhoneNumberType.MOBILE, PhoneNumberType.FIXED_LINE_OR_MOBILE
 
 
@@ -49,6 +50,7 @@ class MailingList(BaseModel):
     text: Optional[str] = None
     tag: Optional[str] = None
     mob_code: Optional[str] = None
+
     # time_finished: Optional[str] = None
 
     @validator('time_created')

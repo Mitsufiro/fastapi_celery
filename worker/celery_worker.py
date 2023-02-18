@@ -54,12 +54,15 @@ def defs_post_client(self, tel_num: int, tag: str, mob_code: int, timezone: str)
     'interval_max': 0.2, })
 def send_message_task(mailing_id: int):
     with db_context() as db:
+
         mailinglist = db.query(ModelMailingList).get(mailing_id)
         text_message = mailinglist.text
         client_tag = mailinglist.tag
         mob_code = mailinglist.mob_code
+
         clients = db.query(ModelClient).filter(ModelClient.tag == client_tag).filter(
             ModelClient.mob_code == mob_code).all()
+
         # filtred_clients = list(map(lambda x: x.mob_code == mob_code, clients))
         # print(filtred_clients)
         for client in clients:
