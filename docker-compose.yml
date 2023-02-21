@@ -1,5 +1,9 @@
 version: "3"
-
+networks:
+  web:
+    external: true
+  internal:
+    external: false
 services:
   db:
     image: postgres:13-alpine
@@ -12,6 +16,11 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    networks:
+      - internal
+    labels:
+      - traefik.enable=false
+
   #    pgadmin:
   #      image: dpage/pgadmin4
   #      environment:
@@ -34,6 +43,14 @@ services:
     depends_on:
       - db
       - celery_worker
+    labels:
+      - traefik.backend=blog
+      - traefik.frontend.rule=Host:blog.127.0.0.1:8000
+      - traefik.docker.network=web
+      - traefik.port=8000
+    networks:
+      - internal
+      - web
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
