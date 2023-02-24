@@ -45,7 +45,7 @@ services:
       - celery_worker
     labels:
       - traefik.backend=blog
-      - traefik.frontend.rule=Host:blog.127.0.0.1
+      - traefik.frontend.rule=Host:blog.89.111.137.57
       - traefik.docker.network=web
       - traefik.port=8000
     networks:
