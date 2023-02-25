@@ -107,7 +107,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$X4CbX3Jr$10B.9P2Di.ZaKcxtEQin00"
+      - "http.middlewares.auth.basicauth.users=admin:$apr1$X4CbX3Jr$10B.9P2Di.ZaKcxtEQin00"
 volumes:
   postgres_data:
   traefik-public-certificates:
