@@ -44,10 +44,10 @@ services:
       - db
       - celery_worker
     labels:
-      - traefik.backend=blog
-      - traefik.frontend.rule=Host:blog.89.111.137.57
-      - traefik.docker.network=web
-      - traefik.port=8000
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.89.111.137.57`)"
+      - "traefik.http.routers.fastapi.tls=true"
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
     networks:
       - internal
       - web
