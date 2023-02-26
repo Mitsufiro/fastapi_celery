@@ -1,23 +1,19 @@
-[entryPoints]
-  [entryPoints.web]
-    address = ":80"
-  [entryPoints.web.http]
-    [entryPoints.web.http.redirections]
-      [entryPoints.web.http.redirections.entryPoint]
-        to = "websecure"
-        scheme = "https"
-
-  [entryPoints.websecure]
+[entryPoints.https]
     address = ":443"
+      [entryPoints.https.tls]
 
-[accessLog]
+[api]
+entrypoint="dashboard"
 
-[providers]
-  [providers.docker]
-    exposedByDefault = false
+[acme]
+email = "lyashenk.ilya@gmail.com"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+  [acme.httpChallenge]
+  entryPoint = "http"
 
-[certificatesResolvers.letsencrypt.acme]
-  email = "your-email@example.com"
-  storage= "acme.json"
-  [certificatesResolvers.letsencrypt.acme.httpChallenge]
-    entryPoint = "web"
+[docker]
+domain = "89.111.137.57"
+watch = true
+network = "web"
