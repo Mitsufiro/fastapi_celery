@@ -43,11 +43,15 @@ services:
     depends_on:
       - db
       - celery_worker
+    links:
+      - traefik-proxy:storage.localhost
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.89.111.137.57`)"
-      - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fastapi_local.entrypoints=web"
+      - "traefik.http.routers.fastapi_local.rule=Host(`fastapi.${LOCAL_1}`, `fastapi.${LOCAL_2}`, `fastapi.${EXT_ENDPOINT1}`)"
+      - "traefik.http.routers.fastapi_local_base.entrypoints=web"
+      - "traefik.http.routers.fastapi_local_base.rule=Host(`${LOCAL_1}`, `${LOCAL_2}`, `${EXT_ENDPOINT1}`)"
+      - traefik.http.services.fastapi_localservice.loadbalancer.server.port=8000
     networks:
       - internal
       - web
@@ -90,26 +94,26 @@ services:
       - app
       - rabbitmq
       - celery_worker
-  traefik:
-    build:
-      context: .
-      dockerfile: Dockerfile.traefik
+  traefik-proxy:
+    container_name: traefik-proxy
+    restart: always
+    image: "traefik:latest"
+    command:
+      - "--providers.docker=true"
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik-public-certificates:/certificates"
+      - ./traefik/traefik.yml:/traefik.yml:ro
+      - ./traefik/.htpasswd:/.htpasswd
+      - "${EB_LOG_BASE_DIR:-./traefik}/traefik-proxy:/logs"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.89.111.137.57`) && (PathPrefix(`/`)"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${LOCAL_1}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
-      - "http.middlewares.auth.basicauth.users=admin:$apr1$X4CbX3Jr$10B.9P2Di.ZaKcxtEQin00"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
 volumes:
   postgres_data:
-  traefik-public-certificates:
 #  rabbitmq_data:
 #    driver: local
