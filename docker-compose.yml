@@ -89,19 +89,17 @@ services:
       - app
       - rabbitmq
       - celery_worker
-  traefik-proxy:
-    container_name: traefik-proxy
-    restart: always
-    image: "traefik:latest"
+  traefik:
+    image: traefik:latest
     command:
       - "--providers.docker=true"
+    restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ./traefik/traefik.toml:/traefik.toml:ro
-      - ./traefik/.htpasswd:/.htpasswd
-      - "${EB_LOG_BASE_DIR:-./traefik}/traefik-proxy:/logs"
+      - "$PWD/services/traefik/traefik.prod.toml:/etc/traefik/traefik.toml"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000)"
