@@ -5,7 +5,7 @@ defaultEntryPoints = ["http", "https"]
     address = ":8080"
     [entryPoints.dashboard.auth]
       [entryPoints.dashboard.auth.basic]
-        users = ["test:$apr1$kRoRrOM.$rqfSUDqqZLMWvFeSgQMzS0"]
+        users = ["admin:$apr1$VY7.bvlM$MDT3cOrXCzi5RPtUkp6Rd0"]
   [entryPoints.http]
     address = ":80"
       [entryPoints.http.redirect]
@@ -26,6 +26,6 @@ onHostRule = true
   entryPoint = "http"
 
 [docker]
-domain = "http://89.111.137.57:8000/docs#"
+domain = "http://89.111.137.57"
 watch = true
 network = "web"
