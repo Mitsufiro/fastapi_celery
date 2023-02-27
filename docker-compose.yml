@@ -42,7 +42,7 @@ services:
       - celery_worker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`http://89.111.137.57:8000/docs#`)"
+      - "traefik.http.routers.fastapi.rule=Host(`http://89.111.137.57:8000`)"
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
     networks:
@@ -104,7 +104,7 @@ services:
       - "${EB_LOG_BASE_DIR:-./traefik}/traefik-proxy:/logs"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000/docs#)"
+      - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
