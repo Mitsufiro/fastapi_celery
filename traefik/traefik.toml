@@ -26,6 +26,6 @@ onHostRule = true
   entryPoint = "http"
 
 [docker]
-domain = "http://89.111.137.57:8000/docs#"
+domain = "89.111.137.57"
 watch = true
 network = "web"
