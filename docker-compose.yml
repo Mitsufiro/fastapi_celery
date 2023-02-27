@@ -1,9 +1,9 @@
 version: "3"
-#networks:
-#  web:
-#    external: true
-#  internal:
-#    external: false
+networks:
+  web:
+    external: true
+  internal:
+    external: false
 services:
   db:
     image: postgres:13-alpine
@@ -42,12 +42,14 @@ services:
       - celery_worker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`89.111.137.57`)"
+      - "traefik.http.routers.fastapi.rule=Host(`http://89.111.137.57:8000/docs#`)"
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
-#    networks:
-#      - internal
-#      - web
+    networks:
+      - internal
+      - web
+
+
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
@@ -87,14 +89,25 @@ services:
       - app
       - rabbitmq
       - celery_worker
-  traefik:
-    image: traefik:latest
+  traefik-proxy:
+    container_name: traefik-proxy
+    restart: always
+    image: "traefik:latest"
+    command:
+      - "--providers.docker=true"
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "$PWD/traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - ./traefik/traefik.yml:/traefik.yml:ro
+      - ./traefik/.htpasswd:/.htpasswd
+      - "${EB_LOG_BASE_DIR:-./traefik}/traefik-proxy:/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000/docs#)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
 volumes:
   postgres_data:
 #  rabbitmq_data:
