@@ -102,7 +102,7 @@ services:
       - "$PWD/traefik/traefik.toml:/traefik/traefik.toml"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000)"
+      - "traefik.http.routers.dashboard.rule=Host(`http://89.111.137.57:8000`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
