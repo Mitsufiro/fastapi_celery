@@ -15,7 +15,7 @@ defaultEntryPoints = ["http", "https"]
       [entryPoints.https.tls]
 
 [api]
-entrypoint="app"
+entrypoint="dashboard"
 
 [acme]
 email = "lyashenk.ilya@gmail.com"
