@@ -113,7 +113,7 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       - "traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect"
-      - "traefik.http.routers.traefik-dashboard.middlewares=auth"
+      - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth"
       - "traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth"
 
     volumes:
