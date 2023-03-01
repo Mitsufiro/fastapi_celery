@@ -118,7 +118,7 @@ services:
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-        # Mount the volume to store the certificates
+        # Mount the volume to store the traefik-public-certificates
       - traefik-public-certificates:/certificates
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
@@ -131,7 +131,7 @@ services:
       - --entrypoints.https.address=:443
       # Create the certificate resolver "le" for Let's Encrypt, uses the environment variable EMAIL
       - --certificatesresolvers.le.acme.email=lyashenk.ilya@gmail.com
-      # Store the Let's Encrypt certificates in the mounted volume
+      # Store the Let's Encrypt traefik-public-certificates in the mounted volume
       - --certificatesresolvers.le.acme.storage=/traefik/acme.json
       # Use the TLS Challenge for Let's Encrypt
       - --certificatesresolvers.le.acme.tlschallenge=true
