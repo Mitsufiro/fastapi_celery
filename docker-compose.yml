@@ -91,6 +91,9 @@ services:
       - rabbitmq
       - celery_worker
   traefik:
+    build:
+      context: .
+      dockerfile: Dockerfile.traefik
     image: traefik:latest
     restart: always
     ports:
