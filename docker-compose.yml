@@ -143,5 +143,6 @@ services:
       - --api
 volumes:
   postgres_data:
+  traefik:
 #  rabbitmq_data:
 #    driver: local
