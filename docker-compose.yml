@@ -144,5 +144,6 @@ services:
 volumes:
   postgres_data:
   traefik-public-certificates:
+  acme.json:
 #  rabbitmq_data:
 #    driver: local
