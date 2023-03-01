@@ -99,7 +99,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
       - "traefik.http.routers.dashboard-http.entrypoints=http"
       - "traefik.http.routers.dashboard-http.rule=Host(`89.111.137.57`)"
       - "traefik.docker.network=web"
