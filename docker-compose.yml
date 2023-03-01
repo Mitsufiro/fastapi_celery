@@ -143,6 +143,6 @@ services:
       - --api
 volumes:
   postgres_data:
-  traefik:
+  traefik-public-certificates:
 #  rabbitmq_data:
 #    driver: local
