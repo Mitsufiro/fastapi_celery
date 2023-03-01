@@ -1,6 +1,6 @@
 version: "3"
 networks:
-  web:
+  traefik-dashboard:
     external: true
   internal:
     external: false
@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.fastapi.tls.certresolver=le"
     networks:
       - internal
-      - web
+      - traefik-dashboard
 
 
   rabbitmq:
@@ -91,9 +91,6 @@ services:
       - rabbitmq
       - celery_worker
   traefik:
-    build:
-      context: .
-      dockerfile: Dockerfile.traefik
     image: traefik:latest
     restart: always
     ports:
@@ -101,25 +98,28 @@ services:
       - "443:443"
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik-dashboard"
+      - "traefik.constraint-label=traefik-dashboard"
+      - "traefik.http.middlewares.admin-auth.basicauth.users=/.htpasswd"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
+      - "traefik.http.routers.traefik-dashboard-http.rule=Host(`89.111.137.57`)"
       - "traefik.docker.network=web"
-      - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
-      - "traefik.http.routers.dashboard-http.entrypoints=http"
-      - "traefik.http.routers.dashboard-http.rule=Host(`89.111.137.57`)"
-      - "traefik.docker.network=web"
-      - "traefik.http.routers.dashboard-https.entrypoints=https"
-      - "traefik.http.routers.dashboard-https.rule=Host(`89.111.137.57`)"
-      - "traefik.http.routers.dashboard-https.tls=true"
-      - "traefik.http.routers.dashboard-https.tls.certresolver=le"
-      - "traefik.http.routers.dashboard-https.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
+      - "traefik.http.routers.traefik-dashboard-https.rule=Host(`89.111.137.57`)"
+      - "traefik.http.routers.traefik-dashboardhttps.tls=true"
+      - "traefik.http.routers.traefik-dashboard-https.tls.certresolver=le"
+      - "traefik.http.routers.traefik-dashboard-https.service=api@internal"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
-      - "traefik.http.routers.dashboard-http.middlewares=https-redirect"
-      - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.admin-auth.basicauth.users=/.htpasswd"
-      - "traefik.http.routers.dashboard-https.middlewares=admin-auth"
+      - "traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth"
+      - "traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth"
+
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "$PWD/traefik/traefik.toml:/traefik/traefik.toml"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+        # Mount the volume to store the certificates
+      - traefik-public-certificates:/certificates
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker
