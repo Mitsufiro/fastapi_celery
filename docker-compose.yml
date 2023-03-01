@@ -100,7 +100,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-dashboard"
       - "traefik.constraint-label=traefik-dashboard"
-      - "traefik.http.middlewares.admin-auth.basicauth.users=/.htpasswd"
+      - "traefik.http.middlewares.admin-auth.basicauth.users=admin:$apr1$VY7.bvlM$MDT3cOrXCzi5RPtUkp6Rd0"
       - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`89.111.137.57`)"
