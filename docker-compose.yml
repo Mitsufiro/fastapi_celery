@@ -90,23 +90,23 @@ services:
       - app
       - rabbitmq
       - celery_worker
-  traefik:
-    image: traefik:latest
-    command:
-      - "--providers.docker=true"
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "$PWD/traefik/traefik.toml:/traefik/traefik.toml"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`89.111.137.57`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
+#  traefik:
+#    image: traefik:latest
+#    command:
+#      - "--providers.docker=true"
+#    restart: always
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+#      - "$PWD/traefik/traefik.toml:/traefik/traefik.toml"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.dashboard.rule=Host(`89.111.137.57`)"
+#      - "traefik.http.routers.dashboard.service=api@internal"
+#      - "traefik.http.routers.dashboard.middlewares=auth"
+#      - "traefik.http.middlewares.auth.basicauth.usersfile=/.htpasswd"
 volumes:
   postgres_data:
 #  rabbitmq_data:
