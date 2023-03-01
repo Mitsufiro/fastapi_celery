@@ -43,7 +43,7 @@ services:
       - celery_worker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`89.111.137.57:8000`)"
+      - "traefik.http.routers.fastapi.rule=Host(`http://89.111.137.57:8000/docs#`)"
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=le"
     networks:
@@ -103,10 +103,10 @@ services:
       - "traefik.http.middlewares.admin-auth.basicauth.users='admin:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1'"
       - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
-      - "traefik.http.routers.traefik-dashboard-http.rule=Host(`89.111.137.57:8000`)"
+      - "traefik.http.routers.traefik-dashboard-http.rule=Host(`http://89.111.137.57:8000/docs#`)"
       - "traefik.docker.network=web"
       - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard-https.rule=Host(`89.111.137.57:8000`)"
+      - "traefik.http.routers.traefik-dashboard-https.rule=Host(`http://89.111.137.57:8000/docs#`)"
       - "traefik.http.routers.traefik-dashboardhttps.tls=true"
       - "traefik.http.routers.traefik-dashboard-https.tls.certresolver=le"
       - "traefik.http.routers.traefik-dashboard-https.service=api@internal"
