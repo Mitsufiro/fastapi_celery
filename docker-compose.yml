@@ -92,10 +92,11 @@ services:
       - celery_worker
   traefik:
     image: traefik:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-dashboard"
@@ -144,5 +145,5 @@ services:
 volumes:
   postgres_data:
   traefik-public-certificates:
-#  rabbitmq_data:
-#    driver: local
+  rabbitmq_data:
+    driver: local
