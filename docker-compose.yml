@@ -65,7 +65,7 @@ services:
     depends_on:
       - db
     networks:
-      - traefik-dashboard
+      - internal
   celery_worker:
     container_name: celery_worker
     build: .
@@ -80,7 +80,7 @@ services:
       - db
       - rabbitmq
     networks:
-      - traefik-dashboard
+      - internal
 
 
   flower:
@@ -97,7 +97,7 @@ services:
       - rabbitmq
       - celery_worker
     networks:
-      - traefik-dashboard
+      - internal
   traefik:
     image: traefik:latest
     restart: unless-stopped
