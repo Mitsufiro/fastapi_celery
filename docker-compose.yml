@@ -59,8 +59,8 @@ services:
       - "25672:25672"
       - "15672:15672"
     volumes:
-      # - "rabbitmq_data:/bitnami"
-      - /bitnami
+       - rabbitmq_data:/bitnami
+#      - /bitnami
     depends_on:
       - db
   celery_worker:
@@ -146,5 +146,5 @@ services:
 volumes:
   postgres_data:
   traefik-public-certificates:
-#  rabbitmq_data:
-#    driver: local
+  rabbitmq_data:
+    driver: local
