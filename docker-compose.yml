@@ -79,6 +79,8 @@ services:
       #      - app
       - db
       - rabbitmq
+    networks:
+      - traefik-dashboard
 
 
   flower:
