@@ -96,6 +96,8 @@ services:
       - app
       - rabbitmq
       - celery_worker
+    networks:
+      - traefik-dashboard
   traefik:
     image: traefik:latest
     restart: unless-stopped
