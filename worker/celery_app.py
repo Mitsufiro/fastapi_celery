@@ -9,7 +9,7 @@ load_dotenv('.env')
 celery_app = Celery(
     "worker",
     backend="db+postgresql+psycopg2://postgres:1488@localhost/goo_sheets",
-    broker="pyamqp://guest:guest@localhost//"
+    broker="pyamqp://guest:guest@localhost:5672//"
 )
 
 celery_app.conf.task_routes = {
