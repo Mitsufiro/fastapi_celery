@@ -187,7 +187,7 @@ async def get_all_stats():
 
 @app.get('/one_mailinglist_statistic', tags=['Mailinglist'])
 async def one_mailinglist_stats(id: int):
-    if not get_item(ModelMailingList,id):
+    if not get_item(ModelMailingList, id):
         return f'No such id of mailing as: {id}, try correct id'
     messages = db.session.query(ModelMessage).filter(ModelMessage.mailing_id == id).all()
     messages_sent = filter_of_messages(id, 'sent')
