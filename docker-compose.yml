@@ -115,7 +115,7 @@ services:
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-https.rule=Host(`encryptedmailing.online`)"
-      - "traefik.http.routers.traefik-dashboardhttps.tls=true"
+      - "traefik.http.routers.traefik-dashboard-https.tls=true"
       - "traefik.http.routers.traefik-dashboard-https.tls.certresolver=le"
       - "traefik.http.routers.traefik-dashboard-https.service=api@internal"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
