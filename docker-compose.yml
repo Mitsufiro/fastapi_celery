@@ -113,7 +113,6 @@ services:
       - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`encryptedmailing.online`)"
-      - "traefik.docker.network=web"
       - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-https.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboardhttps.tls=true"
