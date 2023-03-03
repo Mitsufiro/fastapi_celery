@@ -45,7 +45,6 @@ services:
       - rabbitmq
     labels:
       - "traefik.enable=true"
-      -
       - "traefik.http.routers.traefik-dashboard.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=le"
