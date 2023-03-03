@@ -45,6 +45,7 @@ services:
       - rabbitmq
     labels:
       - "traefik.enable=true"
+      -
       - "traefik.http.routers.traefik-dashboard.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=le"
@@ -108,7 +109,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.constraint-label=traefik-dashboard"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8000"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=80"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`encryptedmailing.online`)"
       - "traefik.docker.network=traefik-dashboard"
