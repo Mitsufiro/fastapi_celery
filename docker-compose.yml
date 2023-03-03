@@ -132,6 +132,7 @@ services:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker
       # Do not expose all Docker services, only the ones explicitly exposed
+      - --providers.docker.constraints=Label(`encryptedmailing.online`)
       - --providers.docker.exposedbydefault=false
       # Create an entrypoint "http" listening on port 80
       - --entrypoints.http.address=:80
