@@ -107,12 +107,11 @@ services:
       - "443:443"
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=traefik-dashboard"
       - "traefik.constraint-label=traefik-dashboard"
-      - "traefik.http.middlewares.admin-auth.basicauth.users='admin:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1'"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8000"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`encryptedmailing.online`)"
+      - "traefik.docker.network=traefik-dashboard"
       - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-https.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboard-https.tls=true"
@@ -121,7 +120,7 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       - "traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect"
-      - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth"
+      - "traefik.http.middlewares.admin-auth.basicauth.users='admin:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1'"
       - "traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth"
 
     volumes:
