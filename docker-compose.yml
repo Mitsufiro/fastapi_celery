@@ -105,7 +105,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-dashboard"
