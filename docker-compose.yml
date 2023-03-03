@@ -103,7 +103,7 @@ services:
     image: traefik:latest
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8000:8000"
       - "443:443"
     labels:
       - "traefik.enable=true"
