@@ -26,6 +26,6 @@ onHostRule = true
   entryPoint = "http"
 
 [docker]
-domain = "89.111.137.57"
+domain = "encryptedmailing.online"
 watch = true
-network = "web"
+network = "traefik-dashboard"

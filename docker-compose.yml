@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=le"
     networks:
-      - internal
+#      - internal
       - traefik-dashboard
 
 
