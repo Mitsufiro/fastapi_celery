@@ -105,13 +105,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8000:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-dashboard"
       - "traefik.constraint-label=traefik-dashboard"
       - "traefik.http.middlewares.admin-auth.basicauth.users='admin:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1'"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
       - "traefik.http.routers.traefik-dashboard-http.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-http.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.traefik-dashboard-https.entrypoints=https"
