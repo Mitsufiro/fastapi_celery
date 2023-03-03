@@ -123,7 +123,7 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       - "traefik.http.routers.app-http.middlewares=https-redirect"
       - "traefik.http.middlewares.admin-auth.basicauth.users='admin:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1'"
-      - "traefik.http.routers.app-https.middlewares=admin-auth"
+#      - "traefik.http.routers.app-https.middlewares=admin-auth"
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
