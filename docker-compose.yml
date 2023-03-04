@@ -108,11 +108,11 @@ services:
       # Listen on port 80, default for HTTP, necessary to redirect to HTTPS
       - target: 80
         published: 80
-        mode: host
+        mode: 'host'
       # Listen on port 443, default for HTTPS
       - target: 443
         published: 443
-        mode: host
+        mode: 'host'
     labels:
       - "traefik.enable=true"
       - "traefik.constraint-label=traefik-dashboard"
