@@ -112,7 +112,7 @@ services:
       - 80:80
       - 443:443
     restart: unless-stopped
-#    labels:
+    labels:
 #      - traefik.enable=true
 #      - traefik.http.services.app.loadbalancer.server.port=8080
 #      - traefik.http.routers.app-http.entrypoints=http
@@ -135,7 +135,7 @@ services:
 #      # Using the environment variables USERNAME and HASHED_PASSWORD
 #      - traefik.http.middlewares.admin-auth.basicauth.users=admin:$apr1$MfZTyweQ$zl/WRVxax9538vd1nsjmC/
 #      # Enable HTTP Basic auth, using the middleware created above
-#      - traefik.http.routers.app-https.middlewares=admin-auth
+      - traefik.http.routers.app-https.middlewares=admin-auth
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
