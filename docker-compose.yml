@@ -130,7 +130,7 @@ services:
 #      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
 #      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
 #      # traefik-http set up only to use the middleware to redirect to https
-#      - traefik.http.routers.app-http.middlewares=https-redirect
+      - traefik.http.routers.app-http.middlewares=https-redirect
 #      # admin-auth middleware with HTTP Basic auth
 #      # Using the environment variables USERNAME and HASHED_PASSWORD
 #      - traefik.http.middlewares.admin-auth.basicauth.users=admin:$apr1$MfZTyweQ$zl/WRVxax9538vd1nsjmC/
