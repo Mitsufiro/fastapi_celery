@@ -46,7 +46,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.your-domain.com`)"
       - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=le"
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
     networks:
       - traefik-dashboard
 
@@ -111,7 +111,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=le"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$9ecIJciV$$arn3MpCwEBtgZK5RZ666d1"
