@@ -105,6 +105,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.prod.toml
       # Mount the volume to store the traefik-public-certificates
       - traefik-public-certificates:/certificates
     labels:
