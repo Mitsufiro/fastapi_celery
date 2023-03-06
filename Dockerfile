@@ -1,4 +1,6 @@
 FROM python:3.10-slim
+FROM traefik:v2.9.6
+
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
@@ -10,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-
+COPY ./traefik.prod.toml ./etc/traefik/traefik.toml
 COPY . .
 
 EXPOSE 8000
