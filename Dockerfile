@@ -1,5 +1,4 @@
 FROM python:3.10-slim
-FROM traefik:v2.9.6
 
 
 ENV PYTHONDONTWRITEBYTECODE 1
