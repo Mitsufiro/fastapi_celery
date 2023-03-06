@@ -28,7 +28,7 @@ services:
   #        - 5050:80
   #      depends_on:
   #        - db
-  app:
+  web:
     build: .
     command: bash -c "uvicorn main:app --host 0.0.0.0 --reload"
     volumes:
@@ -92,7 +92,7 @@ services:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
     depends_on:
-      - app
+      - web
       - rabbitmq
       - celery_worker
     networks:
