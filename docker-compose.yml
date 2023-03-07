@@ -40,8 +40,6 @@ services:
       - ./.env
     depends_on:
       - db
-      - celery_worker
-      - rabbitmq
     labels: # new
 
       - "traefik.enable=true"
