@@ -46,6 +46,7 @@ services:
       - "traefik.http.routers.web.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.routers.registry.middlewares=traefik-compress"
     networks:
       - traefik-dashboard
 
@@ -119,6 +120,14 @@ services:
     volumes:
       - "letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.http.middlewares.traefik-compress.compress=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.encryptedmailing.online`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=traefik-compress"
 volumes:
   postgres_data:
   letsencrypt:
