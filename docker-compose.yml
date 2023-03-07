@@ -1,9 +1,9 @@
 version: "3"
-networks:
-  traefik-dashboard:
-    external: true
-  internal:
-    external: false
+#networks:
+#  traefik-dashboard:
+#    external: true
+#  internal:
+#    external: false
 services:
   db:
     image: postgres:13-alpine
@@ -16,8 +16,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    networks:
-      - traefik-dashboard
+#    networks:
+#      - traefik-dashboard
 
   #    pgadmin:
   #      image: dpage/pgadmin4
@@ -30,7 +30,7 @@ services:
   #        - db
   app:
     build: .
-    command: bash -c "uvicorn main:app --host 0.0.0.0 --reload"
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - .:/fastapi_celery
     ports:
@@ -42,13 +42,13 @@ services:
       - db
       - celery_worker
       - rabbitmq
-    labels: # new
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
-      - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-    networks:
-      - traefik-dashboard
+#    labels: # new
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
+#      - "traefik.http.routers.app.tls=true"
+#      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+#    networks:
+#      - traefik-dashboard
 
 
   rabbitmq:
@@ -63,8 +63,8 @@ services:
     #      - /bitnami
     depends_on:
       - db
-    networks:
-      - traefik-dashboard
+#    networks:
+#      - traefik-dashboard
   celery_worker:
     container_name: celery_worker
     build: .
@@ -78,8 +78,8 @@ services:
       #      - app
       - db
       - rabbitmq
-    networks:
-      - traefik-dashboard
+#    networks:
+#      - traefik-dashboard
 
 
   flower:
@@ -95,30 +95,30 @@ services:
       - app
       - rabbitmq
       - celery_worker
-    networks:
-      - traefik-dashboard
-  traefik:
-    image: traefik:latest
-    ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Mount the volume to store the traefik-public-certificates
-      - traefik-public-certificates:/certificates
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
-      - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.app.service=api@internal"
-      - "traefik.http.routers.app.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$9ecIJciV$$arn3MpCwEBtgZK5RZ666d1"
-    networks:
-      - traefik-dashboard
+#    networks:
+#      - traefik-dashboard
+#  traefik:
+#    image: traefik:latest
+#    ports:
+#      - 80:80
+#      - 443:443
+#    restart: unless-stopped
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      # Mount the volume to store the traefik-public-certificates
+#      - traefik-public-certificates:/certificates
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
+#      - "traefik.http.routers.app.tls=true"
+#      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+#      - "traefik.http.routers.app.service=api@internal"
+#      - "traefik.http.routers.app.middlewares=auth"
+#      - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$9ecIJciV$$arn3MpCwEBtgZK5RZ666d1"
+#    networks:
+#      - traefik-dashboard
 volumes:
   postgres_data:
-  traefik-public-certificates:
+#  traefik-public-certificates:
   rabbitmq_data:
     driver: local
