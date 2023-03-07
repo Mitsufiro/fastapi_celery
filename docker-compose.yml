@@ -43,10 +43,11 @@ services:
       - celery_worker
       - rabbitmq
     labels: # new
+
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.your-domain.com`)"
+      - "traefik.http.routers.web.rule=Host(`encryptedmailing.online`)"
       - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8000"
     networks:
       - traefik-dashboard
 
@@ -102,8 +103,15 @@ services:
     container_name: "traefik"
     command:
       - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
     ports:
+      - "80:80"
       - "8080:8080"
+    networks:
+      - traefik-dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 volumes:
   postgres_data:
   traefik-public-certificates:
