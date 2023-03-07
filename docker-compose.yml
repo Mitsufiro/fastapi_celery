@@ -2,8 +2,8 @@ version: "3"
 networks:
   traefik-dashboard:
     external: true
-  internal:
-    external: false
+#  internal:
+#    external: false
 services:
   db:
     image: postgres:13-alpine
@@ -98,26 +98,12 @@ services:
     networks:
       - traefik-dashboard
   traefik:
-    image: traefik:latest
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
     ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.prod.toml
-      # Mount the volume to store the traefik-public-certificates
-      - traefik-public-certificates:/certificates
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`encryptedmailing.online`)"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$9ecIJciV$$arn3MpCwEBtgZK5RZ666d1"
-    networks:
-      - traefik-dashboard
+      - "8080:8080"
 volumes:
   postgres_data:
   traefik-public-certificates:
