@@ -109,7 +109,7 @@ services:
         - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`encryptedmailing.online`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.encryptedmailing.online`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.tls.certresolver=myresolver"
         - "traefik.http.routers.traefik.service=api@internal"
