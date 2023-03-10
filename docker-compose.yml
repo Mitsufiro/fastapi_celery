@@ -110,7 +110,7 @@ services:
       labels:
         - "traefik.http.middlewares.traefik-compress.compress=true"
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.encryptedmailing.online`)"
+        - "traefik.http.routers.traefik.rule=Host(`encryptedmailing.online`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.tls.certresolver=myresolver"
         - "traefik.http.routers.traefik.service=api@internal"
