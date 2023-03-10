@@ -30,7 +30,7 @@ services:
   #        - db
   web:
     build: .
-    command: bash -c "uvicorn main:app --host 0.0.0.0 --reload"
+    command: bash -c "uvicorn main:app --host 0.0.0.0:8000 --reload"
     volumes:
       - .:/fastapi_celery
     ports:
@@ -42,13 +42,11 @@ services:
       - db
       - celery_worker
       - rabbitmq
-
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`encryptedmailing.online`) && (PathPrefix(`/`)"
-      - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
-      - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+      - traefik.enable=true
+      - traefik.http.routers.app-http.rule=Host(`encryptedmailing.online`)
+      - traefik.http.routers.app-http.tls=true
+      - traefik.http.routers.app-http.tls.certresolver=letsencrypt
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
@@ -96,40 +94,40 @@ services:
   traefik:
       image: "traefik:v2.4"
       container_name: "traefik"
-      build:
-        context: .
-        dockerfile: Dockerfile.traefik
-#      command:
-#        - "--api.insecure=true"
-#        - "--providers.docker=true"
-#        - "--providers.docker.exposedbydefault=false"
-#        - "--entrypoints.web.address=:80"
-#        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-#        - "--entrypoints.websecure.address=:443"
-#        - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-#        - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-#        - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
-#        - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      command:
+        - "--api.insecure=true"
+        - "--providers.docker=true"
+        - "--providers.docker.exposedbydefault=false"
+        - "--entrypoints.web.address=:80"
+        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+        - "--entrypoints.websecure.address=:443"
+        - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+        - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+        - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
+        - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       labels:
+        - "traefik.http.middlewares.traefik-compress.compress=true"
+        - "traefik.http.middlewares.auth.basicauth.users=USER:$$2y$$05$$7qg2gJBqet7VaE2YD6e0d.I8uhXRQtR9IfrlXg73Wj1GXDdQIOQC2"
         - "traefik.enable=true"
-        - "traefik.http.routers.dashboard.tls=true"
-        - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.dashboard.service=api@internal"
-        - "traefik.http.routers.dashboard.middlewares=auth"
-        - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$N1XifClY$$d685Xnmwv2hCPM85Sta8E0"
+        - "traefik.http.routers.traefik.rule=Host(`encryptedmailing.online`)"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.middlewares=traefik-compress"
       ports:
         - "80:80"
         - "443:443"
         - "8080:8080"
-#      networks:
-#        - registry_default
+      networks:
+        - registry_default
       volumes:
-        - "letsencrypt:/letsencrypt"
-        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.toml
+        - traefik-public-certificates:/certificates
 
 
 volumes:
-  letsencrypt:
+  traefik-public-certificates:
   postgres_data:
   rabbitmq_data:
     driver: local

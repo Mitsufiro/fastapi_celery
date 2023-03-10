@@ -14,12 +14,6 @@ RUN pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8000
-EXPOSE 5555
-EXPOSE 5433
-EXPOSE 4360
-EXPOSE 5672
-EXPOSE 25672
-EXPOSE 15672
 
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
