@@ -42,10 +42,10 @@ services:
       - db
       - celery_worker
       - rabbitmq
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.app.rule=Host(`app.localhost`)"
-#      - "traefik.http.services.app.loadbalancer.server.port=8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
 #      - "traefik.http.routers.app.entrypoints=websecure"
 #      - "traefik.http.routers.app.tls.certresolver=myresolver"
 
@@ -93,32 +93,13 @@ services:
       - web
       - rabbitmq
       - celery_worker
-#    networks:
-#      - traefik-dashboard
-#  traefik:
-#    image: traefik:latest
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#      - "8080:8080"
-#    restart: unless-stopped
-#    volumes:
-#      - "letsencrypt:/letsencrypt"
-#      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-#      # Mount the volume to store the traefik-public-certificates
-#    command:
-#      - "--api.insecure=true"
-#      - "--providers.docker=true"
-#      - "--providers.docker.exposedbydefault=false"
-#      - "--entrypoints.app.address=:80"
-#      - "--entrypoints.app.http.redirections.entryPoint.to=websecure"
-#      - "--entrypoints.websecure.address=:443"
-#      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-#      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=app"
-#      - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
-#      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-#    networks:
-#      - traefik-dashboard
+  traefik:
+      image: "traefik:v2.4"
+      container_name: "traefik"
+      command:
+        - "--api.insecure=true"
+      ports:
+        - "8080:8080"
 volumes:
 #  letsencrypt:
   postgres_data:
