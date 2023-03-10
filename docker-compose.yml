@@ -94,35 +94,31 @@ services:
   traefik:
       image: "traefik:v2.4"
       container_name: "traefik"
-      command:
-        - "--api.insecure=true"
-        - "--providers.docker=true"
-        - "--providers.docker.exposedbydefault=false"
-        - "--entrypoints.web.address=:80"
-        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-        - "--entrypoints.websecure.address=:443"
-        - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-        - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-        - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
-        - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      labels:
-        - "traefik.http.middlewares.traefik-compress.compress=true"
-        - "traefik.http.middlewares.auth.basicauth.users=USER:$$2y$$05$$7qg2gJBqet7VaE2YD6e0d.I8uhXRQtR9IfrlXg73Wj1GXDdQIOQC2"
-        - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`encryptedmailing.online`)"
-        - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.tls.certresolver=myresolver"
-        - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.routers.traefik.middlewares=traefik-compress"
+#      command:
+#        - "--api.insecure=true"
+#        - "--providers.docker=true"
+#        - "--providers.docker.exposedbydefault=false"
+#        - "--entrypoints.web.address=:80"
+#        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+#        - "--entrypoints.websecure.address=:443"
+#        - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+#        - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+#        - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
+#        - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+#      labels:
+#        - traefik.enable=true
+#        - traefik.http.routers.app-http.rule=Host(`encryptedmailing.online`)
+#        - traefik.http.routers.app-http.tls=true
+#        - traefik.http.routers.app-http.tls.certresolver=letsencrypt
       ports:
         - "80:80"
         - "443:443"
-        - "8080:8080"
+#        - "8080:8080"
       networks:
         - registry_default
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
-        - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.toml
+        - $PWD/traefik/traefik.toml:/etc/traefik/traefik.toml
         - traefik-public-certificates:/certificates
 
 
