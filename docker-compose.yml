@@ -44,8 +44,8 @@ services:
       - rabbitmq
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`encryptedmailing.online`)"
-      - "traefik.http.services.app.loadbalancer.server.port=8000"
+      - "traefik.http.routers.web.rule=Host(`encryptedmailing.online`)"
+      - "traefik.http.services.web.loadbalancer.server.port=8000"
 #      - "traefik.http.routers.app.entrypoints=websecure"
 #      - "traefik.http.routers.app.tls.certresolver=myresolver"
 
