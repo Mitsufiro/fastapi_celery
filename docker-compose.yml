@@ -48,7 +48,7 @@ services:
       - "traefik.http.services.web.loadbalancer.server.port=8000"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
-
+      - "traefik.http.routers.registry.middlewares=traefik-compress"
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
@@ -107,6 +107,13 @@ services:
         - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
         - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
         - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik.rule=Host(`encryptedmailing.online`)"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.middlewares=traefik-compress"
       ports:
         - "80:80"
         - "443:443"
