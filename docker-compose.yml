@@ -48,7 +48,7 @@ services:
       - "traefik.http.services.web.loadbalancer.server.port=8000"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
-      - "traefik.http.routers.registry.middlewares=traefik-compress"
+      - "traefik.http.routers.web.middlewares=traefik-compress"
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
