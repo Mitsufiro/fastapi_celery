@@ -108,6 +108,7 @@ services:
         - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
         - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       labels:
+        - "traefik.http.middlewares.traefik-compress.compress=true"
         - "traefik.enable=true"
         - "traefik.http.routers.traefik.rule=Host(`traefik.encryptedmailing.online`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
