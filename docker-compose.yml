@@ -76,7 +76,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.web.loadbalancer.server.port=8000"
-      - "traefik.http.routers.web.rule=Host(`encryptedmailing.online`) && PathPrefix(`/docs`)"
+      - "traefik.http.routers.web.rule=Host(`encryptedmailing.online`) && PathPrefix(`/docs`) && PathPrefix(`/openapi.json`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
   rabbitmq:
