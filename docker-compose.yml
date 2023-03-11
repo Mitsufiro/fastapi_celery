@@ -1,9 +1,7 @@
 version: "3"
-#networks:
-#  traefik-dashboard:
-#    external: true
-#  internal:
-#    external: false
+networks:
+  web:
+    external: true
 services:
   db:
     image: postgres:13-alpine
@@ -28,6 +26,28 @@ services:
   #        - 5050:80
   #      depends_on:
   #        - db
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   web:
     build: .
     command: bash -c "uvicorn main:app --host 0.0.0.0:8000 --reload"
@@ -42,11 +62,12 @@ services:
       - db
       - celery_worker
       - rabbitmq
+
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.app-http.rule=Host(`encryptedmailing.online`)
-      - traefik.http.routers.app-http.tls=true
-      - traefik.http.routers.app-http.tls.certresolver=letsencrypt
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`web.encryptedmailing.online`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
   rabbitmq:
     image: "rabbitmq:3.9.11-management"
     ports:
@@ -91,42 +112,9 @@ services:
       - web
       - rabbitmq
       - celery_worker
-  traefik:
-      image: "traefik:v2.4"
-      container_name: "traefik"
-#      command:
-#        - "--api.insecure=true"
-#        - "--providers.docker=true"
-#        - "--providers.docker.exposedbydefault=false"
-#        - "--entrypoints.web.address=:80"
-#        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-#        - "--entrypoints.websecure.address=:443"
-#        - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-#        - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-#        - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
-#        - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-#      labels:
-#        - traefik.enable=true
-#        - traefik.http.routers.app-http.rule=Host(`encryptedmailing.online`)
-#        - traefik.http.routers.app-http.tls=true
-#        - traefik.http.routers.app-http.tls.certresolver=letsencrypt
-      ports:
-        - "80:80"
-        - "443:443"
-#        - "8080:8080"
-      networks:
-        - registry_default
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - $PWD/traefik/traefik.toml:/etc/traefik/traefik.toml
-        - traefik-public-certificates:/certificates
-
 
 volumes:
-  traefik-public-certificates:
+  letsencrypt:
   postgres_data:
   rabbitmq_data:
     driver: local
-networks:
-  registry_default:
-    external: true
