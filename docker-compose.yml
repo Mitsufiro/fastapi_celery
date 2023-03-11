@@ -52,7 +52,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   web:
     build: .
-    command: bash -c "uvicorn main:app --host 0.0.0.0:8000 --reload"
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --reload"
     volumes:
       - .:/fastapi_celery
     ports:
