@@ -41,6 +41,8 @@ services:
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    networks:
+      - web
     ports:
       - "80:80"
       - "443:443"
@@ -62,7 +64,10 @@ services:
       - db
       - celery_worker
       - rabbitmq
-
+    expose:
+      - 8000
+    networks:
+      - web
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`web.encryptedmailing.online`)"
