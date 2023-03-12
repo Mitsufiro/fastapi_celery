@@ -26,4 +26,7 @@
     <a>
         <img src="https://img.shields.io/badge/Docker-20.10.16-green?logo=Docker&logoColor=black?style=plastic">
     </a>
+    <a>
+        <img src="https://img.shields.io/badge/Traefik-blue?logo=traefik&logoColor=black?style=plastic">
+    </a>
 </div>
