@@ -4,7 +4,7 @@ networks:
     external: true
 services:
   db:
-    image: postgres:latest
+    image: postgres:13-alpine
     #    command: bash -c "alembic revision --autogenerate -m "New Migration" && alembic upgrade head"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
