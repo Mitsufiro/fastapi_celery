@@ -91,8 +91,8 @@ services:
     #      - /bitnami
     depends_on:
       - db
-#    networks:
-#      - traefik-dashboard
+    networks:
+      - web
   celery_worker:
     container_name: celery_worker
     build: .
@@ -106,8 +106,8 @@ services:
       #      - app
       - db
       - rabbitmq
-#    networks:
-#      - traefik-dashboard
+    networks:
+      - web
 
 
   flower:
@@ -123,7 +123,8 @@ services:
       - web
       - rabbitmq
       - celery_worker
-
+    networks:
+      - web
 volumes:
   letsencrypt:
   postgres_data:
