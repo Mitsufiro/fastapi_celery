@@ -46,6 +46,12 @@ services:
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=lyashenk.ilya@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - # Enable the access log, with HTTP requests
+      - "--accesslog"
+        # Enable the Traefik log, for configurations and errors
+      - "--log"
+        # Enable the Dashboard and API
+      - "--api"
     labels:
       - "traefik.http.routers.web.entrypoints=web"
       - "traefik.http.services.web.loadbalancer.server.port=8000"
