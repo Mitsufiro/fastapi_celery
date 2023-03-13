@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=зщыепкуы
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1488
       - POSTGRES_DB=goo_sheets
     networks:
